@@ -19,7 +19,6 @@
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Navbar</a>
-      <span class="ms-auto mx-2" id="userName"></span>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -54,29 +53,18 @@
     </div>
   </nav>
 
-  <div class="container mt-3">
-    <div class="mb-3">
-      <input type="text" class="form-control" placeholder="name" id="name-new">
+  <div class="container">
+    <div class="detail-pic my-4" style="background-image: url('https://picsum.photos/400');"></div>
+    <div>
+      <h5>올린사람 : 모름</h5>
+      <hr>
+      <h5 class="title">상품명</h5>
+      <p class="date">올린날짜</p>
+      <p class="price">가격</p>
     </div>
-    <div class="mb-3">
-      <input type="email" class="form-control" placeholder="email" id="email-new">
+      <button class="btn btn-outline-secondary" id="edit">수정</button>
+      <button class="btn btn-outline-secondary" id="chat">채팅</button>
     </div>
-    <div class="mb-3">
-      <input type="password" class="form-control" placeholder="pw" id="pw-new">
-    </div>
-    <button type="submit" class="btn btn-primary" id="register">가입하기</button>
-  </div>
-
-  <div class="container mt-3">
-    <div class="mb-3">
-      <input type="email" class="form-control" placeholder="email" id="email">
-    </div>
-    <div class="mb-3">
-      <input type="password" class="form-control" placeholder="pw" id="pw">
-    </div>
-    <button type="submit" class="btn btn-primary" id="login">로그인하기</button>
-    <button type="submit" class="btn btn-primary" id="logout">로그아웃</button>
-  </div>
 
   <script>
     // Your web app's Firebase configuration
@@ -97,52 +85,39 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    var 뺸거 = localStorage.getItem('user')
-    // $('#userName').html(JSON.parse(뺸거).displayName)
+    var 내uid = JSON.parse(localStorage.getItem('user')).uid
 
-    firebase.auth().onAuthStateChanged((user)=>{
-      if (user) {
-        console.log(user.uid)
-        console.log(user.displayName)
-        localStorage.setItem('user', JSON.stringify(user))
-        $('#userName').html(user.displayName)
+    $('#chat').click(function(){
+      
+      var 데이터 = {
+        who : [내uid, 판매자uid],
+        product : 상품명,
+        data : new Date()
       }
+      db.collection('chatroom').add(데이터)
+      window.location.href = '/chatroom.html';
     })
 
-    $('#logout').click(function(){
-        firebase.auth().signOut()
-        localStorage.removeItem('user')
-      })
+    var 판매자uid;
+    var 상품명;
 
-    $('#login').click(function(){
-  
-        var 이메일 = $('#email').val();
-        var 패스워드 = $('#pw').val();
+    var 쿼리스트링 = new URLSearchParams(window.location.search);
 
-        firebase.auth().signInWithEmailAndPassword(이메일, 패스워드).then((result)=>{
-          console.log(result.user)
-        })
+    db.collection('product').doc(쿼리스트링.get('id')).get().then((result)=>{
+
+      판매자uid = result.data().uid;
+      상품명 = result.data().제목;
+
+      console.log(result.data())
+      $('.title').html(result.data().제목)
+      $('.price').html(result.data().가격)
+      $('.detail-pic').css('background-image', 'url(${result.data().이미지})')
     })
 
-    $('#register').click(function(){
-  
-         var 이메일 = $('#email-new').val();
-         var 패스워드 = $('#pw-new').val();
-         var 이름 = $('#name-new').val();
-
-        firebase.auth().createUserWithEmailAndPassword(이메일, 패스워드).then((result)=>{
-          
-          var 유저정보 = {
-            name : 이름,
-            email : 이메일
-          }
-          db.collection('user').doc(result.user.uid).set({유저정보})
-
-          console.log(result);
-          console.log(result.user)
-          result.user.updateProfile( {displayName : 이름} ).then()
-        })
+    $('#edit').click(function(){
+        window.location.href = '/edit.html?id=' + 쿼리스트링.get('id')
     })
+    
   </script>
   
 </body>

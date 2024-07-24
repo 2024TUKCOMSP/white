@@ -19,18 +19,11 @@
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Navbar</a>
-      <span class="ms-auto mx-2" id="userName"></span>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Dropdown
@@ -42,41 +35,35 @@
               <li><a class="dropdown-item" href="#">Something else here</a></li>
             </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
       </div>
     </div>
   </nav>
 
-  <div class="container mt-3">
-    <div class="mb-3">
-      <input type="text" class="form-control" placeholder="name" id="name-new">
+  <div class="container p-4 detail">
+    <div class="row">
+      <div class="col-3 p-0">
+        <ul class="list-group chat-list">
+          <li class="list-group-item">
+            <h6>채팅방1</h6>
+            <h6 class="text-small">채팅방아이디</h6>
+          </li>
+        </ul>
+      </div>
+      <div class="col-9 p-0">
+        <div class="chat-room">
+          <ul class="list-group chat-content">
+            <li><span class="chat-box">채팅방1 내용</span></li>
+            <li><span class="chat-box">채팅방1 내용</span></li>
+            <li><span class="chat-box mine">채팅방1 내용</span></li>
+          </ul>
+          <div class="input-group">
+            <input class="form-control" id="chat-input">
+            <button class="btn btn-secondary" id="send">전송</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="mb-3">
-      <input type="email" class="form-control" placeholder="email" id="email-new">
-    </div>
-    <div class="mb-3">
-      <input type="password" class="form-control" placeholder="pw" id="pw-new">
-    </div>
-    <button type="submit" class="btn btn-primary" id="register">가입하기</button>
-  </div>
-
-  <div class="container mt-3">
-    <div class="mb-3">
-      <input type="email" class="form-control" placeholder="email" id="email">
-    </div>
-    <div class="mb-3">
-      <input type="password" class="form-control" placeholder="pw" id="pw">
-    </div>
-    <button type="submit" class="btn btn-primary" id="login">로그인하기</button>
-    <button type="submit" class="btn btn-primary" id="logout">로그아웃</button>
-  </div>
+ </div> 
 
   <script>
     // Your web app's Firebase configuration
@@ -97,52 +84,47 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    var 뺸거 = localStorage.getItem('user')
-    // $('#userName').html(JSON.parse(뺸거).displayName)
+    var 내uid = JSON.parse( localStorage.getItem('user') ).uid
+    var 채팅방id;
 
-    firebase.auth().onAuthStateChanged((user)=>{
-      if (user) {
-        console.log(user.uid)
-        console.log(user.displayName)
-        localStorage.setItem('user', JSON.stringify(user))
-        $('#userName').html(user.displayName)
-      }
-    })
+    db.collection('chatroom').where('who', 'array-contains', 내uid).get().then((result)=>{
+      result.forEach((a)=>{
+        var template = `<li class="list-group-item">
+              <h6>${a.data().product}</h6>
+              <h6 class="text-small">${a.id}</h6>
+            </li>`
+        $('.chat-list').append(template)
 
-    $('#logout').click(function(){
-        firebase.auth().signOut()
-        localStorage.removeItem('user')
+        //저거 박스 누르면 채팅방 id 가져오는 코드
+        $('.list-group-item').click(function(e){
+          채팅방id = $(this).children('.text-small').text();
+
+          e.stopImmediatePropagation();
+          $('.chat-content').html('')
+
+          db.collection('chatroom').doc(채팅방id).collection('messages').orderBy('date').onSnapshot((result)=>{
+            $('.chat-content').html('');
+            result.forEach((a)=>{
+              var 템플릿 = `<li><span class="chat-box">${a.data().content}</span></li>`;
+              $('.chat-content').append(템플릿)
+            })
+          })
+        })
       })
-
-    $('#login').click(function(){
-  
-        var 이메일 = $('#email').val();
-        var 패스워드 = $('#pw').val();
-
-        firebase.auth().signInWithEmailAndPassword(이메일, 패스워드).then((result)=>{
-          console.log(result.user)
-        })
     })
 
-    $('#register').click(function(){
-  
-         var 이메일 = $('#email-new').val();
-         var 패스워드 = $('#pw-new').val();
-         var 이름 = $('#name-new').val();
+    $('#send').click(function(){
+      var 데이터 = {
+        content : $('#chat-input').val(),
+        date : new Date(),
+        uid : 내uid
+      }
 
-        firebase.auth().createUserWithEmailAndPassword(이메일, 패스워드).then((result)=>{
-          
-          var 유저정보 = {
-            name : 이름,
-            email : 이메일
-          }
-          db.collection('user').doc(result.user.uid).set({유저정보})
+      db.collection('chatroom').doc(채팅방id).collection('messages').add(데이터)
 
-          console.log(result);
-          console.log(result.user)
-          result.user.updateProfile( {displayName : 이름} ).then()
-        })
     })
+
+    
   </script>
   
 </body>
