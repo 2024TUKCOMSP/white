@@ -21,6 +21,29 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Dropdown
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
       </div>
     </div>
   </nav>
@@ -35,14 +58,14 @@
   <script>
     
     var firebaseConfig = {
-      apiKey: "AIzaSyDJNXnnPpqsCXwAkdluobP0wPvgcf4Em8E",
-      authDomain: "codingsam-d10c5.firebaseapp.com",
-      projectId: "codingsam-d10c5",
-      storageBucket: "codingsam-d10c5.appspot.com",
-      messagingSenderId: "104413311287",
-      appId: "1:104413311287:web:7338cc7aa2c5bbf680eab2"
+      apiKey: "AIzaSyAfVZ1Dbk4lSGYn54TL_P0lCKbt0AfSXV8",
+      authDomain: "carrot-91604.firebaseapp.com",
+      projectId: "carrot-91604",
+      storageBucket: "carrot-91604.appspot.com",
+      messagingSenderId: "592945342537",
+      appId: "1:592945342537:web:1a0e884843702e0a687798"
     };
-    
+  
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
 
@@ -58,10 +81,10 @@
 
   <script>
  
-  const db = firebase.firestore();
-  const storage = firebase.storage();
+ const db = firebase.firestore();
+const storage = firebase.storage();
 
-  $('#send').click(function() {
+$('#send').click(function() {
     var file = document.querySelector('#image').files[0];
     var storageRef = storage.ref();
     var 저장할경로 = storageRef.child('image/' + file.name);
@@ -84,9 +107,7 @@
                     가격: $('#price').val(),
                     내용: $('#content').val(),
                     날짜: new Date(),
-                    이미지: url,
-                    uid : JSON.parse(localStorage.getItem('user')).uid,
-                    이름 : JSON.parse(localStorage.getItem('user')).displayName
+                    이미지: url
                 };
 
                 db.collection('product').add(저장할거).then((result) => {
