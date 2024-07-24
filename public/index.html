@@ -2,60 +2,38 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-  <link href="main.css" rel = "stylesheet">
+  <title>Market</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="main.css" rel="stylesheet">
 </head>
 <body>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> 
-  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
-  
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Navbar</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand" href="index.html">Market</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <form class="d-flex ms-auto" role="search" id="searchForm">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="searchInput">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+        <button class="btn btn-outline-primary ms-2" id="loginButton">Login</button>
       </div>
     </div>
   </nav>
-  <div class="container mt-3">
+
+  <div class="container mt-5" id="productContainer">
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+  
   <script>
-    // Your web app's Firebase configuration
     var firebaseConfig = {
       apiKey: "AIzaSyDJNXnnPpqsCXwAkdluobP0wPvgcf4Em8E",
       authDomain: "codingsam-d10c5.firebaseapp.com",
@@ -64,30 +42,80 @@
       messagingSenderId: "104413311287",
       appId: "1:104413311287:web:7338cc7aa2c5bbf680eab2"
     };
-
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-  </script>
-  <script>
-    const db = firebase.firestore();
-    db.collection('product').get().then((결과)=>{
-      결과.forEach((doc)=>{
-        console.log(doc)
-        var 템플릿 = `<div class="product">
-        <div class="thumbnail" style="background-image: url('${doc.data().이미지}')"></div>
-        <div class="flex-grow-1 p-4">
-          <h5 class="title"><a href="/detail.html?id=${doc.id}">${doc.data().제목}</a></h5>
-          <p class="date">2030년 1월 8일</p>
-          <p class="price">${doc.data().가격}</p>
-          <p class="float-end">?0</p>
-        </div>
-        </div>`;
-        $('.container').append(템플릿)
-      })
-    })
 
-  </script>
-  
+    const db = firebase.firestore();
+    
+    function updateLoginButton() {
+      const loginButton = document.getElementById('loginButton');
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          loginButton.textContent = user.displayName;
+          loginButton.onclick = () => window.location.href = `/mypage.html?id=${user.uid}`;
+        } else {
+          loginButton.textContent = 'Login';
+          loginButton.onclick = () => window.location.href = 'login.html';
+        }
+      });
+    }
+
+    updateLoginButton();
+
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const productContainer = document.getElementById('productContainer');
+      productContainer.innerHTML = '';
+
+      db.collection('product')
+        .orderBy('날짜', 'desc')
+        .get()
+        .then((results) => {
+          results.forEach((doc) => {
+            const productData = doc.data();
+            if (productData.제목.toLowerCase().includes(searchTerm) || productData.가격.toString().includes(searchTerm)) {
+              const template = createProductTemplate(doc);
+              productContainer.innerHTML += template;
+            }
+          });
+        })
+        .catch((error) => {
+          console.error("Error searching documents: ", error);
+        });
+    });
+
+    function createProductTemplate(doc) {
+      const productData = doc.data();
+      return `
+        <div class="card mb-3">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <div class="thumbnail" style="background-image: url('${productData.이미지}')"></div>
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title"><a href="/detail.html?id=${doc.id}">${productData.제목}</a></h5>
+                <p class="card-text">${new Date(productData.날짜.toDate()).toLocaleDateString()}</p>
+                <p class="card-text">${productData.가격} 원</p>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    db.collection('product')
+      .orderBy('날짜', 'desc')
+      .get()
+      .then((results) => {
+        const productContainer = document.getElementById('productContainer');
+        results.forEach((doc) => {
+          const template = createProductTemplate(doc);
+          productContainer.innerHTML += template;
+        });
+      })
+      .catch((error) => {
+        console.error("Error getting documents: ", error);
+      });
   </script>
 </body>
 </html>

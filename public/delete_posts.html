@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 삭제</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">Market</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+            </li>
+          </ul>
+          <span id="userName" class="navbar-text ms-auto"></span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>내 게시글</h2>
+        <div id="postList" class="mt-4">
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyDJNXnnPpqsCXwAkdluobP0wPvgcf4Em8E",
+            authDomain: "codingsam-d10c5.firebaseapp.com",
+            projectId: "codingsam-d10c5",
+            storageBucket: "codingsam-d10c5.appspot.com",
+            messagingSenderId: "104413311287",
+            appId: "1:104413311287:web:7338cc7aa2c5bbf680eab2"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('id');
+
+        var 내uid = JSON.parse(localStorage.getItem('user')).uid;
+
+        auth.onAuthStateChanged(function(user) {
+            if (user && user.uid === userId) {
+                document.getElementById('userName').textContent = user.displayName;
+                loadUserPosts(내uid);
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        function loadUserPosts(uid) {
+            db.collection('product').where('uid', '==', uid).get()
+                .then((querySnapshot) => {
+                    const postList = document.getElementById('postList');
+                    postList.innerHTML = '';
+                    querySnapshot.forEach((doc) => {
+                        const post = doc.data();
+                        const postId = doc.id;  // Firestore 문서 ID
+                        const postElement = document.createElement('div');
+                        postElement.className = 'card mb-3';
+                        postElement.innerHTML = `
+                            <div class="card-body">
+                                <h5 class="card-title">${post.제목}</h5>
+                                <p class="card-text">${post.가격} 원</p>
+                                <button class="btn btn-danger delete-btn" data-id="${postId}">삭제</button>
+                            </div>
+                        `;
+                        postList.appendChild(postElement);
+                    });
+                    addDeleteListeners();
+                })
+                .catch((error) => {
+                    console.error("게시글을 가져오는 중 오류 발생: ", error);
+                });
+        }
+
+        function addDeleteListeners() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const postId = this.getAttribute('data-id');
+                    deletePost(postId);
+                });
+            });
+        }
+
+        function deletePost(postId) {
+            db.collection('product').doc(postId).delete()
+                .then(() => {
+                    console.log("게시글이 성공적으로 삭제되었습니다!");
+                    removePostElement(postId);
+                })
+                .catch((error) => {
+                    console.error("게시글 삭제 중 오류 발생: ", error);
+                });
+        }
+
+        function removePostElement(postId) {
+            const postList = document.getElementById('postList');
+            const postElement = document.querySelector(`.delete-btn[data-id="${postId}"]`).closest('.card');
+            postList.removeChild(postElement);
+        }
+    </script>
+</body>
+</html>

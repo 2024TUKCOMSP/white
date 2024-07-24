@@ -16,67 +16,59 @@
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
   
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Navbar</a>
-      <span class="ms-auto mx-2" id="userName"></span>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">Market</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <span class="ms-auto mx-2" id="userName"></span>
+        </div>
+      </div>
+    </nav>
+  
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h3>회원가입</h3>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Name" id="name-new">
+              </div>
+              <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Email" id="email-new">
+              </div>
+              <div class="mb-3">
+                <input type="password" class="form-control" placeholder="Password" id="pw-new">
+              </div>
+              <button type="submit" class="btn btn-primary w-100" id="register">가입하기</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h3>로그인</h3>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Email" id="email">
+              </div>
+              <div class="mb-3">
+                <input type="password" class="form-control" placeholder="Password" id="pw">
+              </div>
+              <button type="submit" class="btn btn-primary w-100 mb-2" id="login">로그인하기</button>
+              <button type="submit" class="btn btn-secondary w-100" id="logout">로그아웃</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </nav>
-
-  <div class="container mt-3">
-    <div class="mb-3">
-      <input type="text" class="form-control" placeholder="name" id="name-new">
-    </div>
-    <div class="mb-3">
-      <input type="email" class="form-control" placeholder="email" id="email-new">
-    </div>
-    <div class="mb-3">
-      <input type="password" class="form-control" placeholder="pw" id="pw-new">
-    </div>
-    <button type="submit" class="btn btn-primary" id="register">가입하기</button>
-  </div>
-
-  <div class="container mt-3">
-    <div class="mb-3">
-      <input type="email" class="form-control" placeholder="email" id="email">
-    </div>
-    <div class="mb-3">
-      <input type="password" class="form-control" placeholder="pw" id="pw">
-    </div>
-    <button type="submit" class="btn btn-primary" id="login">로그인하기</button>
-    <button type="submit" class="btn btn-primary" id="logout">로그아웃</button>
-  </div>
 
   <script>
     // Your web app's Firebase configuration
@@ -105,22 +97,38 @@
         console.log(user.uid)
         console.log(user.displayName)
         localStorage.setItem('user', JSON.stringify(user))
-        $('#userName').html(user.displayName)
-      }
+        $('#userName').html(`<button class="btn btn-primary" id="userInfoBtn">${user.displayName}</button>`)
+      
+      // 사용자 정보 버튼 클릭 이벤트
+      $('#userInfoBtn').click(function() {
+        window.location.href = `/mypage.html?id=${user.uid}`;
+      })
+    } else {
+      $('#userName').html('')
+    }
+  })
+  
+    $('#logout').click(function(){
+      firebase.auth().signOut().then(() => {
+        localStorage.removeItem('user')
+        alert('로그아웃되었습니다.')
+        window.location.href = 'index.html'
+      }).catch((error) => {
+        console.error('로그아웃 실패:', error)
+      })
     })
 
-    $('#logout').click(function(){
-        firebase.auth().signOut()
-        localStorage.removeItem('user')
-      })
     $('#login').click(function(){
-  
-        var 이메일 = $('#email').val();
-        var 패스워드 = $('#pw').val();
+      var 이메일 = $('#email').val();
+      var 패스워드 = $('#pw').val();
 
-        firebase.auth().signInWithEmailAndPassword(이메일, 패스워드).then((result)=>{
-          console.log(result.user)
-        })
+      firebase.auth().signInWithEmailAndPassword(이메일, 패스워드).then((result) => {
+        console.log(result.user)
+        window.location.href = 'index.html'
+      }).catch((error) => {
+        alert('로그인에 실패했습니다.')
+        console.error('로그인 실패:', error)
+      })
     })
 
     $('#register').click(function(){
@@ -139,8 +147,13 @@
 
           console.log(result);
           console.log(result.user)
-          result.user.updateProfile( {displayName : 이름} ).then()
+          result.user.updateProfile({displayName : 이름}).then(() => {
+          alert('아이디가 생성되었습니다.')
         })
+      }).catch((error) => {
+        alert('아이디 생성에 실패했습니다.')
+        console.error('회원가입 실패:', error)
+      })
     })
   </script>
   

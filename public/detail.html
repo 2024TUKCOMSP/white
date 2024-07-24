@@ -1,124 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-  <link href="main.css" rel = "stylesheet">
+  <title>Market</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="main.css" rel="stylesheet">
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
-  
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Navbar</a>
+      <a class="navbar-brand" href="index.html">Market</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+            <a class="nav-link active" aria-current="page" href="index.html">Home</a>
           </li>
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <form class="d-flex me-2" role="search" id="searchForm">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="searchInput">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+        <button class="btn btn-outline-primary" id="loginButton">Login</button>
       </div>
     </div>
   </nav>
 
-  <div class="container">
-    <div class="detail-pic my-4" style="background-image: url('https://picsum.photos/400');"></div>
-    <div>
-      <h5>올린사람 : 모름</h5>
-      <hr>
-      <h5 class="title">상품명</h5>
-      <p class="date">올린날짜</p>
-      <p class="price">가격</p>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">상품 정보</h5>
+          </div>
+          <div class="card-body">
+            <div class="detail-pic mb-4" style="background-image: url('https://picsum.photos/400'); height: 400px; background-size: cover; background-position: center;"></div>
+            <h5>올린 사람: <span id="sellerName" class="fw-bold"></span></h5>
+            <hr>
+            <h5 class="title">상품명</h5>
+            <p class="date text-muted">올린 날짜</p>
+            <p class="price text-success fw-bold">가격</p>
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-outline-secondary me-2" id="edit" style="display: none;">수정</button>
+              <button class="btn btn-primary" id="chat">채팅</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">다른 상품들</h5>
+          </div>
+          <div class="card-body">
+          </div>
+        </div>
+      </div>
     </div>
-      <button class="btn btn-outline-secondary" id="edit">수정</button>
-      <button class="btn btn-outline-secondary" id="chat">채팅</button>
-    </div>
+  </div>
 
   <script>
-    // Your web app's Firebase configuration
-    var firebaseConfig = {
-      apiKey: "AIzaSyDJNXnnPpqsCXwAkdluobP0wPvgcf4Em8E",
-      authDomain: "codingsam-d10c5.firebaseapp.com",
-      projectId: "codingsam-d10c5",
-      storageBucket: "codingsam-d10c5.appspot.com",
-      messagingSenderId: "104413311287",
-      appId: "1:104413311287:web:7338cc7aa2c5bbf680eab2"
-    };
-
-    // Initialize Firebase
+  var firebaseConfig = {
+    apiKey: "AIzaSyDJNXnnPpqsCXwAkdluobP0wPvgcf4Em8E",
+    authDomain: "codingsam-d10c5.firebaseapp.com",
+    projectId: "codingsam-d10c5",
+    storageBucket: "codingsam-d10c5.appspot.com",
+    messagingSenderId: "104413311287",
+    appId: "1:104413311287:web:7338cc7aa2c5bbf680eab2"
+  };
     firebase.initializeApp(firebaseConfig);
-  </script>
-  
-  <script>
+
     const db = firebase.firestore();
+    const auth = firebase.auth();
     const storage = firebase.storage();
 
-    var 내uid = JSON.parse(localStorage.getItem('user')).uid
-
-    $('#chat').click(function(){
-      
-      var 데이터 = {
-        who : [내uid, 판매자uid],
-        product : 상품명,
-        data : new Date()
-      }
-      db.collection('chatroom').add(데이터)
-      window.location.href = '/chatroom.html';
-    })
-
+    var 내uid = null;
     var 판매자uid;
     var 상품명;
+    var 판매자이름;
 
-    var 쿼리스트링 = new URLSearchParams(window.location.search);
+    const 쿼리스트링 = new URLSearchParams(window.location.search);
+    const docId = 쿼리스트링.get('id');
 
-    db.collection('product').doc(쿼리스트링.get('id')).get().then((result)=>{
+    function updateLoginButton() {
+      const loginButton = document.getElementById('loginButton');
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          내uid = user.uid;
+          loginButton.textContent = user.displayName;
+          loginButton.onclick = () => window.location.href = `/mypage.html?id=${user.uid}`;
+          document.getElementById('edit').style.display = 'block';
+        } else {
+          loginButton.textContent = 'Login';
+          loginButton.onclick = () => window.location.href = 'login.html';
+        }
+      });
+    }
 
-      판매자uid = result.data().uid;
-      상품명 = result.data().제목;
+    updateLoginButton();
 
-      console.log(result.data())
-      $('.title').html(result.data().제목)
-      $('.price').html(result.data().가격)
-      $('.detail-pic').css('background-image', 'url(${result.data().이미지})')
-    })
+    $('#chat').click(function() {
+      if (!내uid) {
+        alert('로그인 후 채팅을 시작할 수 있습니다.');
+        window.location.href = 'login.html';
+      } else if (내uid === 판매자uid) {
+        alert('자신의 게시물에서는 채팅을 시작할 수 없습니다.');
+      } else {
+        var 데이터 = {
+          who: [내uid, 판매자uid],
+          product: 상품명,
+          date: new Date()
+        };
+        db.collection('chatroom').add(데이터)
+        .then(() => {
+          window.location.href = '/chatroom.html';
+        });
+      }
+    });
 
-    $('#edit').click(function(){
-        window.location.href = '/edit.html?id=' + 쿼리스트링.get('id')
-    })
-    
+    db.collection('product').doc(docId).get().then((result) => {
+      const productData = result.data();
+      판매자uid = productData.uid;
+      상품명 = productData.제목;
+
+      $('.title').text(productData.제목);
+      $('.price').text(productData.가격 + ' 원');
+      $('.detail-pic').css('background-image', `url(${productData.이미지})`);
+      $('.date').text(new Date(productData.날짜.seconds * 1000).toLocaleDateString('ko-KR'));
+
+      return db.collection('user').doc(판매자uid).get();
+    }).then((sellerDoc) => {
+      if (sellerDoc.exists) {
+        판매자이름 = sellerDoc.data().유저정보.name;
+        $('#sellerName').text(판매자이름);
+      }
+    }).catch((error) => {
+      console.error("Error fetching document: ", error);
+    });
+
+    $('#edit').click(function() {
+      window.location.href = '/edit.html?id=' + docId;
+    });
   </script>
-  
 </body>
 </html>
