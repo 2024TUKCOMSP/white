@@ -23,7 +23,8 @@ jobs:
 
     - name: Create package.json
       run: |
-        echo '{
+        cat <<EOF > package.json
+        {
           "name": "white",
           "version": "1.0.0",
           "scripts": {
@@ -33,7 +34,8 @@ jobs:
           "dependencies": {
             "firebase-tools": "^9.16.0"
           }
-        }' > package.json
+        }
+        EOF
 
     - name: Install dependencies
       run: npm install
@@ -50,5 +52,6 @@ jobs:
         args: deploy --only hosting
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
 
 
