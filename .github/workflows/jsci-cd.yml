@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - develop
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,17 +22,17 @@ jobs:
 
     - name: Create package.json
       run: |
-        echo '{
-          "name": "market-web-app",
-          "version": "1.0.0",
-          "scripts": {
-            "test": "echo \\"No tests specified\\" && exit 0",
-            "build": "echo \\"Building project...\\" && exit 0"
-          },
-          "dependencies": {
-            "firebase-tools": "^9.16.0"
-          }
-        }' > package.json
+        echo '{' > package.json
+        echo '  "name": "market-web-app",' >> package.json
+        echo '  "version": "1.0.0",' >> package.json
+        echo '  "scripts": {' >> package.json
+        echo '    "test": "echo \\"No tests specified\\" && exit 0",' >> package.json
+        echo '    "build": "echo \\"Building project...\\" && exit 0"' >> package.json
+        echo '  },' >> package.json
+        echo '  "dependencies": {' >> package.json
+        echo '    "firebase-tools": "^9.16.0"' >> package.json
+        echo '  }' >> package.json
+        echo '}' >> package.json
 
     - name: Install dependencies
       run: npm install
@@ -50,5 +49,4 @@ jobs:
         args: deploy --only hosting
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
 
