@@ -23,7 +23,7 @@ jobs:
     - name: Create package.json
       run: |
         echo '{' > package.json
-        echo '  "name": "market-web-app",' >> package.json
+        echo '  "name": "white",' >> package.json
         echo '  "version": "1.0.0",' >> package.json
         echo '  "scripts": {' >> package.json
         echo '    "test": "echo \\"No tests specified\\" && exit 0",' >> package.json
