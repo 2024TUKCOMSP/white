@@ -39,4 +39,3 @@
 ![스크린샷 2024-07-25 143435](https://github.com/user-attachments/assets/25d1abc0-e874-4df8-876e-2f67a0cc29bf)
 ![스크린샷 2024-07-25 143444](https://github.com/user-attachments/assets/249e595d-f1e7-447f-801b-57d57cf10262)
 
-![스크린샷 2024-07-25 145958](https://github.com/user-attachments/assets/214e5202-2e9d-468f-af2c-fa0947bb3a8e)
