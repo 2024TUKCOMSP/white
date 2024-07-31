@@ -82,7 +82,7 @@
             
             const user = auth.currentUser;
             if (!user) {
-                alert('Please login to upload a product');
+                alert('상품을 업로드하려면 로그인이 필요합니다.');
                 return;
             }
 
@@ -95,7 +95,7 @@
                 null, 
                 (error) => {
                     console.error('Upload failed:', error);
-                    alert('Upload failed. Please try again.');
+                    alert('업로드에 실패했습니다. 다시 시도해주세요.');
                 }, 
                 () => {
                     업로드작업.snapshot.ref.getDownloadURL().then((url) => {
@@ -110,11 +110,11 @@
                         };
 
                         db.collection('product').add(저장할거).then(() => {
-                            alert('Product uploaded successfully!');
+                            alert('상품이 업로드 되었습니다.');
                             window.location.href = 'index.html';
                         }).catch((error) => {
                             console.error('Error adding document:', error);
-                            alert('Failed to save product. Please try again.');
+                            alert('상품 저장에 실패했습니다. 다시 시도해주세요.');
                         });
                     });
                 }
