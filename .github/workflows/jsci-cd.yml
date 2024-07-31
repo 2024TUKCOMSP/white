@@ -3,10 +3,11 @@ name: CI/CD for Market Web App
 on:
   push:
     branches:
-      - develop
+      - master
   pull_request:
     branches:
-      - develop
+      - master
+
 
 jobs:
   build:
@@ -25,7 +26,8 @@ jobs:
       run: |
         cat <<EOF > package.json
         {
-          "name": "market-web-app",
+
+          "name": "white",
           "version": "1.0.0",
           "scripts": {
             "test": "echo \\"No tests specified\\" && exit 0",
@@ -52,5 +54,6 @@ jobs:
         args: deploy --only hosting
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
 
 
